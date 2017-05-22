@@ -1,5 +1,5 @@
 # Heliwizard
-##This is not ready for USE
+**This is not ready for USE**
 ---
 This is a wizard to build a heli wizard for the Frsky radio family. This includes the launcher and the heli Wizard. The Wizard will only work for very Basic configuration of Flybarless helicopter. You will have to program the FBL contoller after basic setup. You will also have to check all of your settings.
 
