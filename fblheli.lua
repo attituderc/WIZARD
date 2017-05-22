@@ -25,7 +25,7 @@ local eleCH1 = 0
 local fltmodCH1 = 0
 local thrhldCH1 = 0
 local paramsetCH1 = 0
-local swfltMode = 4
+local swfltMode = 1
 
 
 -- Common functions
@@ -236,7 +236,37 @@ local function drawFltmodMenu()
   lcd.drawText(20, LCD_H-8, "Channel", 0);
   lcd.drawText(LCD_W/2-19, LCD_H-8, ">>>", 0);
   lcd.drawSource(113, LCD_H-8, MIXSRC_CH1+rudCH1, getFieldFlags(0))
-  fieldsMax = 0
+  if swfltMode == 0 then
+    -- SA
+    lcd.drawPixmap(112, 8, "7HV.bmp")
+    lcd.drawText(20, LCD_H-16, "Assign channels", 0);
+    lcd.drawText(LCD_W/2-19, LCD_H-8, ">>>", 0);
+    lcd.drawSource(116, LCD_H-8, MIXSRC_CH1+ailCH1, getFieldFlags(0))
+    fieldsMax = 0
+	elseif swfltMode == 1 then
+	-- SB
+    lcd.drawPixmap(112, 8, "ailerons-1.bmp")
+    lcd.drawText(25, LCD_H-16, "Assign channel", 0);
+    lcd.drawText(LCD_W/2-19, LCD_H-8, ">>>", 0);
+    lcd.drawSource(151, LCD_H-8, MIXSRC_CH1+ailCH1, getFieldFlags(1))
+    fieldsMax = 1
+	elseif swfltMode == 2 then
+    -- SC
+    lcd.drawPixmap(112, 8, "ailerons-2.bmp")
+    lcd.drawText(20, LCD_H-16, "Assign channels", 0);
+    lcd.drawText(LCD_W/2-19, LCD_H-8, ">>>", 0);
+    lcd.drawSource(116, LCD_H-8, MIXSRC_CH1+ailCH1, getFieldFlags(1))
+    lcd.drawSource(175, LCD_H-8, MIXSRC_CH1+ailCH2, getFieldFlags(2))
+    fieldsMax = 2
+	elseif swfltMode == 3 then
+    -- SD
+    lcd.drawPixmap(112, 8, "ailerons-2.bmp")
+    lcd.drawText(20, LCD_H-16, "Assign channels", 0);
+    lcd.drawText(LCD_W/2-19, LCD_H-8, ">>>", 0);
+    lcd.drawSource(116, LCD_H-8, MIXSRC_CH1+ailCH1, getFieldFlags(1))
+    lcd.drawSource(175, LCD_H-8, MIXSRC_CH1+ailCH2, getFieldFlags(2))
+    fieldsMax = 3
+	end
 end
 
 local function fltmodMenu(event)
@@ -244,8 +274,16 @@ local function fltmodMenu(event)
     dirty = false
     drawFltmodMenu()
   end
+
   navigate(event, fieldsMax, page-1, page+1)
-  rudCH1 = channelIncDec(event, rudCH1)
+
+  if field==0 then
+    swfltMode = fieldIncDec(event, swfltMode, 2)
+  elseif field==1 then
+    ailCH1 = channelIncDec(event, ailCH1)
+  elseif field==2 then
+    ailCH2 = channelIncDec(event, ailCH2)
+	end
 end
 
 -- Param Set Menu
