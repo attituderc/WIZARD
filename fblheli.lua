@@ -15,17 +15,22 @@ local edit = false
 local field = 0
 local fieldsMax = 0
 local comboBoxMode = 0 -- Scrap variable
-local switchItems = {"SA", "SB", "SC", "SD", "SE", "SF", "SG", "SH"}
+local switchItems = {"SA", "SB", "SC", "SD", "SE", "SG"}
+local switchItems2pos = {"SF", "SH"}
 
 -- Model settings
 local thrCH1 = 0
 local ailCH1 = 0
 local rudCH1 = 0
 local eleCH1 = 0
-local fltmodCH1 = 0
-local thrhldCH1 = 0
-local paramsetCH1 = 0
-local swfltMode = 1
+local fltmodSW1 = 0
+local thrhldSW1 = 0
+local paramsetCH1 = 4
+local paramsetSW1 = 0
+local swparamSet = 0
+local swfltMode = 0
+local thrhldMode = 0
+
 
 
 -- Common functions
@@ -133,9 +138,9 @@ local function drawThrottleMenu()
   lcd.clear()
   lcd.drawText(1, 0, "Select helicopter throttle channel", 0)
   lcd.drawFilledRectangle(0, 0, LCD_W, 8, GREY_DEFAULT+FILL_WHITE)
-  lcd.drawCombobox(0, 8, LCD_W/2, {"..."}, comboBoxMode, getFieldFlags(1))
+  --lcd.drawCombobox(0, 8, LCD_W/2, {"..."}, comboBoxMode, getFieldFlags(1))
   lcd.drawLine(LCD_W/2-1, 18, LCD_W/2-1, LCD_H-1, DOTTED, 0)
-  lcd.drawPixmap(120, 8, "multi-thr.bmp")
+  lcd.drawPixmap(120, 8, "7HV.bmp")
   lcd.drawText(20, LCD_H-16, "Assign Throttle", 0);
   lcd.drawText(20, LCD_H-8, "Channel", 0);
   lcd.drawText(LCD_W/2-19, LCD_H-8, ">>>", 0);
@@ -157,9 +162,9 @@ local function drawAilMenu()
   lcd.clear()
   lcd.drawText(1, 0, "Select helicopter Aileron channel", 0)
   lcd.drawFilledRectangle(0, 0, LCD_W, 8, GREY_DEFAULT+FILL_WHITE)
-  lcd.drawCombobox(0, 8, LCD_W/2, {"..."}, comboBoxMode, getFieldFlags(1))
+  --lcd.drawCombobox(0, 8, LCD_W/2, {"..."}, comboBoxMode, getFieldFlags(1))
   lcd.drawLine(LCD_W/2-1, 18, LCD_W/2-1, LCD_H-1, DOTTED, 0)
-  lcd.drawPixmap(120, 8, "multi-roll.bmp")
+  lcd.drawPixmap(120, 8, "7HV.bmp")
   lcd.drawText(20, LCD_H-16, "Assign Aileron", 0);
   lcd.drawText(20, LCD_H-8, "Channel", 0);
   lcd.drawText(LCD_W/2-19, LCD_H-8, ">>>", 0);
@@ -181,9 +186,9 @@ local function drawEleMenu()
   lcd.clear()
   lcd.drawText(1, 0, "Select helicopter Elevator channel", 0)
   lcd.drawFilledRectangle(0, 0, LCD_W, 8, GREY_DEFAULT+FILL_WHITE)
-  lcd.drawCombobox(0, 8, LCD_W/2, {"..."}, comboBoxMode, getFieldFlags(1))
+  --lcd.drawCombobox(0, 8, LCD_W/2, {"..."}, comboBoxMode, getFieldFlags(1))
   lcd.drawLine(LCD_W/2-1, 18, LCD_W/2-1, LCD_H-1, DOTTED, 0)
-  lcd.drawPixmap(120, 8, "multi-pitch.bmp")
+  lcd.drawPixmap(120, 8, "7HV.bmp")
   lcd.drawText(20, LCD_H-16, "Assign Elevator", 0);
   lcd.drawText(20, LCD_H-8, "Channel", 0);
   lcd.drawText(LCD_W/2-19, LCD_H-8, ">>>", 0);
@@ -205,9 +210,9 @@ local function drawRudMenu()
   lcd.clear()
   lcd.drawText(1, 0, "Select helicopter Rudder channel", 0)
   lcd.drawFilledRectangle(0, 0, LCD_W, 8, GREY_DEFAULT+FILL_WHITE)
-  lcd.drawCombobox(0, 8, LCD_W/2, {"..."}, comboBoxMode, getFieldFlags(1))
+  --lcd.drawCombobox(0, 8, LCD_W/2, {"..."}, comboBoxMode, getFieldFlags(1))
   lcd.drawLine(LCD_W/2-1, 18, LCD_W/2-1, LCD_H-1, DOTTED, 0)
-  lcd.drawPixmap(120, 8, "multi-yaw.bmp")
+  lcd.drawPixmap(120, 8, "7HV.bmp")
   lcd.drawText(20, LCD_H-16, "Assign Rudder", 0);
   lcd.drawText(20, LCD_H-8, "Channel", 0);
   lcd.drawText(LCD_W/2-19, LCD_H-8, ">>>", 0);
@@ -230,41 +235,22 @@ local function drawFltmodMenu()
   lcd.drawText(1, 0, "Select Flight Mode Switch", 0)
   lcd.drawFilledRectangle(0, 0, LCD_W, 8, GREY_DEFAULT+FILL_WHITE)
   lcd.drawCombobox(0, 8, LCD_W/2, switchItems, swfltMode, getFieldFlags(0))
-  lcd.drawLine(LCD_W/2-1, 18, LCD_W/2-1, LCD_H-1, DOTTED, 0)
   lcd.drawPixmap(120, 8, "7HV.bmp")
-  lcd.drawText(20, LCD_H-16, "Assign Rudder", 0);
-  lcd.drawText(20, LCD_H-8, "Channel", 0);
-  lcd.drawText(LCD_W/2-19, LCD_H-8, ">>>", 0);
-  lcd.drawSource(113, LCD_H-8, MIXSRC_CH1+rudCH1, getFieldFlags(0))
   if swfltMode == 0 then
     -- SA
     lcd.drawPixmap(112, 8, "7HV.bmp")
-    lcd.drawText(20, LCD_H-16, "Assign channels", 0);
-    lcd.drawText(LCD_W/2-19, LCD_H-8, ">>>", 0);
-    lcd.drawSource(116, LCD_H-8, MIXSRC_CH1+ailCH1, getFieldFlags(0))
     fieldsMax = 0
 	elseif swfltMode == 1 then
 	-- SB
     lcd.drawPixmap(112, 8, "ailerons-1.bmp")
-    lcd.drawText(25, LCD_H-16, "Assign channel", 0);
-    lcd.drawText(LCD_W/2-19, LCD_H-8, ">>>", 0);
-    lcd.drawSource(151, LCD_H-8, MIXSRC_CH1+ailCH1, getFieldFlags(1))
     fieldsMax = 1
 	elseif swfltMode == 2 then
     -- SC
     lcd.drawPixmap(112, 8, "ailerons-2.bmp")
-    lcd.drawText(20, LCD_H-16, "Assign channels", 0);
-    lcd.drawText(LCD_W/2-19, LCD_H-8, ">>>", 0);
-    lcd.drawSource(116, LCD_H-8, MIXSRC_CH1+ailCH1, getFieldFlags(1))
-    lcd.drawSource(175, LCD_H-8, MIXSRC_CH1+ailCH2, getFieldFlags(2))
     fieldsMax = 2
 	elseif swfltMode == 3 then
     -- SD
     lcd.drawPixmap(112, 8, "ailerons-2.bmp")
-    lcd.drawText(20, LCD_H-16, "Assign channels", 0);
-    lcd.drawText(LCD_W/2-19, LCD_H-8, ">>>", 0);
-    lcd.drawSource(116, LCD_H-8, MIXSRC_CH1+ailCH1, getFieldFlags(1))
-    lcd.drawSource(175, LCD_H-8, MIXSRC_CH1+ailCH2, getFieldFlags(2))
     fieldsMax = 3
 	end
 end
@@ -278,28 +264,46 @@ local function fltmodMenu(event)
   navigate(event, fieldsMax, page-1, page+1)
 
   if field==0 then
-    swfltMode = fieldIncDec(event, swfltMode, 2)
+    swfltMode = fieldIncDec(event, swfltMode, 5)
   elseif field==1 then
     ailCH1 = channelIncDec(event, ailCH1)
   elseif field==2 then
+    ailCH2 = channelIncDec(event, ailCH2)
+  elseif field==3 then
     ailCH2 = channelIncDec(event, ailCH2)
 	end
 end
 
 -- Param Set Menu
 local function drawParamMenu()
-  lcd.clear()
-  lcd.drawText(1, 0, "Select Param Set Switch", 0)
+   lcd.clear()
+  lcd.drawText(1, 0, "Select Param Switch And Channel", 0)
   lcd.drawFilledRectangle(0, 0, LCD_W, 8, GREY_DEFAULT+FILL_WHITE)
-  lcd.drawCombobox(0, 8, LCD_W/2, {"..."}, comboBoxMode, getFieldFlags(1))
-  lcd.drawLine(LCD_W/2-1, 18, LCD_W/2-1, LCD_H-1, DOTTED, 0)
+  lcd.drawCombobox(0, 8, LCD_W/2, switchItems, swparamSet, getFieldFlags(0))
   lcd.drawPixmap(120, 8, "7HV.bmp")
-  lcd.drawText(20, LCD_H-16, "Assign Rudder", 0);
+   lcd.drawText(20, LCD_H-16, "Assign Param Set", 0);
   lcd.drawText(20, LCD_H-8, "Channel", 0);
   lcd.drawText(LCD_W/2-19, LCD_H-8, ">>>", 0);
-  lcd.drawSource(113, LCD_H-8, MIXSRC_CH1+rudCH1, getFieldFlags(0))
-  fieldsMax = 0
+  lcd.drawSource(113, LCD_H-8, MIXSRC_CH1+paramsetCH1, getFieldFlags(0))
+  if swparamSet == 0 then
+    -- SA
+    lcd.drawPixmap(112, 8, "7HV.bmp")
+    fieldsMax = 0
+	elseif swparamSet == 1 then
+	-- SB
+    lcd.drawPixmap(112, 8, "ailerons-1.bmp")
+    fieldsMax = 1
+	elseif swparamSet == 2 then
+    -- SC
+    lcd.drawPixmap(112, 8, "ailerons-2.bmp")
+    fieldsMax = 2
+	elseif swparamSet == 3 then
+    -- SD
+    lcd.drawPixmap(112, 8, "ailerons-2.bmp")
+    fieldsMax = 3
+	end
 end
+
 
 local function paramMenu(event)
   if dirty then
@@ -307,22 +311,25 @@ local function paramMenu(event)
     drawParamMenu()
   end
   navigate(event, fieldsMax, page-1, page+1)
-  rudCH1 = channelIncDec(event, rudCH1)
+  paramsetCH1 = channelIncDec(event, paramsetCH1)
 end
 
 -- Throttle Menu
 local function drawThrhldMenu()
   lcd.clear()
-  lcd.drawText(1, 0, "Select Throttle Hold Switch", 0)
+  lcd.drawText(1, 0, "Select Flight Mode Switch", 0)
   lcd.drawFilledRectangle(0, 0, LCD_W, 8, GREY_DEFAULT+FILL_WHITE)
-  lcd.drawCombobox(0, 8, LCD_W/2, {"..."}, comboBoxMode, getFieldFlags(1))
-  lcd.drawLine(LCD_W/2-1, 18, LCD_W/2-1, LCD_H-1, DOTTED, 0)
+  lcd.drawCombobox(0, 8, LCD_W/2, switchItems2pos, thrhldMode, getFieldFlags(0))
   lcd.drawPixmap(120, 8, "7HV.bmp")
-  lcd.drawText(20, LCD_H-16, "Assign Rudder", 0);
-  lcd.drawText(20, LCD_H-8, "Channel", 0);
-  lcd.drawText(LCD_W/2-19, LCD_H-8, ">>>", 0);
-  lcd.drawSource(113, LCD_H-8, MIXSRC_CH1+rudCH1, getFieldFlags(0))
-  fieldsMax = 0
+  if thrhldMode == 0 then
+    -- SF
+    lcd.drawPixmap(112, 8, "7HV.bmp")
+    fieldsMax = 0
+	elseif thrhldMode == 1 then
+	-- SH
+    lcd.drawPixmap(112, 8, "ailerons-1.bmp")
+    fieldsMax = 1
+	end
 end
 
 local function thrhldMenu(event)
@@ -330,9 +337,17 @@ local function thrhldMenu(event)
     dirty = false
     drawThrhldMenu()
   end
+
   navigate(event, fieldsMax, page-1, page+1)
-  rudCH1 = channelIncDec(event, rudCH1)
+
+  if field==0 then
+    thrhldMode = fieldIncDec(event, swfltMode, 2)
+  elseif field==1 then
+    ailCH1 = channelIncDec(event, ailCH1)
+	end
 end
+
+
 
 -- Confirmation Menu
 local function drawNextLine(x, y, label, channel)
@@ -389,7 +404,7 @@ local function confirmationMenu(event)
     drawConfirmationMenu()
   end
 
-  navigate(event, fieldsMax, RUD_PAGE, page)
+  navigate(event, fieldsMax, PARAM_SET_PAGE, page)
 
   if event == EVT_EXIT_BREAK then
     return 2
