@@ -25,11 +25,12 @@ local rudCH1 = 0
 local eleCH1 = 0
 local fltmodSW1 = 0
 local thrhldSW1 = 0
-local paramsetCH1 = 4
+local paramsetCH1 = 0
 local paramsetSW1 = 0
 local swparamSet = 0
 local swfltMode = 0
 local thrhldMode = 0
+local pitchCH1 = 0
 
 
 
@@ -131,6 +132,8 @@ local function init()
   ailCH1 = defaultChannel(3)
   rudCH1 = defaultChannel(0)
   eleCH1 = defaultChannel(1)
+  paramsetCH1 = defaultChannel(4)
+  pitchCH1 = defaultChannel(5)
 end
 
 -- Throttle Menu
