@@ -136,6 +136,10 @@ local function init()
   pitchCH1 = defaultChannel(5)
 end
 
+-- Set curves for Flightmodes and throttle
+
+
+
 -- Throttle Menu
 local function drawThrottleMenu()
   lcd.clear()
