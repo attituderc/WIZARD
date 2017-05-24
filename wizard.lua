@@ -29,8 +29,9 @@ end
 
 local function drawModelChoiceMenu()
   lcd.clear()
-  lcd.drawScreenTitle("", 0, 0)
-  lcd.drawText(58, 13, "Select model type", 0)
+    --@StodgySticks I just put the title in the drawscreentitle
+  lcd.drawScreenTitle("Select Model Type", 0, 0)
+  --lcd.drawText(58, 1, "Select Model Type", 0)
   lcd.drawPixmap( 16, 17, "plane.bmp")
   lcd.drawPixmap( 63, 17, "heli.bmp")
   lcd.drawPixmap(110, 17, "delta.bmp")
@@ -55,7 +56,8 @@ local function modelTypeMenu(event)
     end
     dirty = true
   else
-    modelType = fieldIncDec(event, modelType, 2)
+  --@StodgySticks I updated max from 2 to 3  
+  modelType = fieldIncDec(event, modelType, 3)
   end
   return 0
 end
