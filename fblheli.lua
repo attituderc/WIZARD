@@ -288,7 +288,7 @@ end
 
 -- CURVES_PAGE
 
-local function setCurves()
+--[[local function setCurves()
   xpoints = {}
   xpoints[0] = 0
   xpoints[1] = 17
@@ -326,14 +326,14 @@ local function setCurves()
   lcd.drawNumber(48, 15, val)
   -- lcd.drawNumber(48, 30, num)
 end
-
+--]]
 local function drawCurvesMenu()
   lcd.clear()
   lcd.drawText(1, 0, "Confirm Curves", 0)
   lcd.drawFilledRectangle(0, 0, LCD_W, 8, GREY_DEFAULT+FILL_WHITE)
   lcd.drawLine(LCD_W/2-1, 18, LCD_W/2-1, LCD_H-1, DOTTED, 0)
-  --lcd.drawPixmap(120, 8, "7HV.bmp")
-  setCurves()
+  lcd.drawPixmap(120, 8, "7HV.bmp")
+  --setCurves()
   
   fieldsMax = 0
 end
