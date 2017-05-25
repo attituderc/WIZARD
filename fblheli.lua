@@ -5,8 +5,9 @@ local ELE_PAGE = 2
 local RUD_PAGE = 3
 local FLIGHT_MODE_PAGE = 4
 local THROTTLE_HOLD_PAGE = 5
-local PARAM_SET_PAGE = 6
-local CONFIRMATION_PAGE = 7
+local CURVES_PAGE = 6
+local PARAM_SET_PAGE = 7
+local CONFIRMATION_PAGE = 8
 
 -- Navigation variables
 local page = THROTTLE_PAGE
@@ -25,11 +26,12 @@ local rudCH1 = 0
 local eleCH1 = 0
 local fltmodSW1 = 0
 local thrhldSW1 = 0
-local paramsetCH1 = 0
-local paramsetSW1 = 0
+local paramsCH1 = 0
+local paramsSW1 = 0
 local swparamSet = 0
 local swfltMode = 0
 local thrhldMode = 0
+local thrhldSW1 = 0
 local pitchCH1 = 0
 
 
@@ -136,10 +138,6 @@ local function init()
   pitchCH1 = defaultChannel(5)
 end
 
--- Set curves for Flightmodes and throttle
-
-
-
 -- Throttle Menu
 local function drawThrottleMenu()
   lcd.clear()
@@ -242,24 +240,31 @@ local function drawFltmodMenu()
   lcd.drawText(1, 0, "Select Flight Mode Switch", 0)
   lcd.drawFilledRectangle(0, 0, LCD_W, 8, GREY_DEFAULT+FILL_WHITE)
   lcd.drawCombobox(0, 8, LCD_W/2, switchItems, swfltMode, getFieldFlags(0))
-  lcd.drawPixmap(120, 8, "7HV.bmp")
   if swfltMode == 0 then
     -- SA
-    lcd.drawPixmap(112, 8, "7HV.bmp")
+    lcd.drawPixmap(112, 8, "SA.bmp")
     fieldsMax = 0
 	elseif swfltMode == 1 then
 	-- SB
-    lcd.drawPixmap(112, 8, "ailerons-1.bmp")
+    lcd.drawPixmap(112, 8, "SB.bmp")
     fieldsMax = 1
 	elseif swfltMode == 2 then
     -- SC
-    lcd.drawPixmap(112, 8, "ailerons-2.bmp")
+    lcd.drawPixmap(112, 8, "SC.bmp")
     fieldsMax = 2
 	elseif swfltMode == 3 then
     -- SD
-    lcd.drawPixmap(112, 8, "ailerons-2.bmp")
+    lcd.drawPixmap(112, 8, "SD.bmp")
     fieldsMax = 3
-	end
+    elseif swfltMode == 4 then
+    -- SE
+    lcd.drawPixmap(112, 8, "SE.bmp")
+    fieldsMax = 4
+	elseif swfltMode == 5 then
+    -- SG
+    lcd.drawPixmap(112, 8, "SG.bmp")
+    fieldsMax = 5
+   end
 end
 
 local function fltmodMenu(event)
@@ -281,33 +286,97 @@ local function fltmodMenu(event)
 	end
 end
 
+-- CURVES_PAGE
+
+local function setCurves()
+  xpoints = {}
+  xpoints[0] = 0
+  xpoints[1] = 17
+  xpoints[2] = 23
+  xpoints[3] = 32
+  xpoints[4] = 52
+  xpoints[5] = 77
+  xpoints[6] = 100
+
+  ypoints = {}
+  ypoints[0] = 23
+  ypoints[1] = 187
+  ypoints[2] = 23
+  ypoints[3] = -80
+  ypoints[4] = 10
+  ypoints[5] = -70
+  ypoints[6] = 20
+  ypoints[7] = 20
+  ypoints[8] = 20
+
+  params = {}
+  params["x"] = xpoints
+  params["y"] = ypoints
+  params["points"] = 7
+  params["smooth"] = 1
+  params["type"] = 1
+  val =  model.setCurve(2, params)
+
+  params["type"] = 0
+
+  params["points"]=9
+  val2 =  model.setCurve(0, params)
+  lcd.clear()
+  lcd.drawNumber(48, 1, val2)
+  lcd.drawNumber(48, 15, val)
+  -- lcd.drawNumber(48, 30, num)
+end
+
+local function drawCurvesMenu()
+  lcd.clear()
+  lcd.drawText(1, 0, "Confirm Curves", 0)
+  lcd.drawFilledRectangle(0, 0, LCD_W, 8, GREY_DEFAULT+FILL_WHITE)
+  lcd.drawLine(LCD_W/2-1, 18, LCD_W/2-1, LCD_H-1, DOTTED, 0)
+  --lcd.drawPixmap(120, 8, "7HV.bmp")
+  setCurves()
+  
+  fieldsMax = 0
+end
+
+local function curvesMenu(event)
+  if dirty then
+    dirty = false
+    drawCurvesMenu()
+  end
+  navigate(event, fieldsMax, page, page+1)
+  thrCH1 = channelIncDec(event, thrCH1)
+end
+
 -- Param Set Menu
 local function drawParamMenu()
-   lcd.clear()
-  lcd.drawText(1, 0, "Select Param Switch And Channel", 0)
+  lcd.clear()
+  lcd.drawText(1, 0, "Select Bank Switch", 0)
   lcd.drawFilledRectangle(0, 0, LCD_W, 8, GREY_DEFAULT+FILL_WHITE)
-  lcd.drawCombobox(0, 8, LCD_W/2, switchItems, swparamSet, getFieldFlags(0))
-  lcd.drawPixmap(120, 8, "7HV.bmp")
-   lcd.drawText(20, LCD_H-16, "Assign Param Set", 0);
-  lcd.drawText(20, LCD_H-8, "Channel", 0);
-  lcd.drawText(LCD_W/2-19, LCD_H-8, ">>>", 0);
-  lcd.drawSource(113, LCD_H-8, MIXSRC_CH1+paramsetCH1, getFieldFlags(0))
-  if swparamSet == 0 then
+  lcd.drawCombobox(0, 8, LCD_W/2, switchItems, paramsSW1, getFieldFlags(0))
+  if paramsSW1 == 0 then
     -- SA
-    lcd.drawPixmap(112, 8, "7HV.bmp")
+    lcd.drawPixmap(112, 8, "SA.bmp")
     fieldsMax = 0
-	elseif swparamSet == 1 then
+	elseif paramsSW1 == 1 then
 	-- SB
-    lcd.drawPixmap(112, 8, "ailerons-1.bmp")
+    lcd.drawPixmap(112, 8, "SB.bmp")
     fieldsMax = 1
-	elseif swparamSet == 2 then
+	elseif paramsSW1 == 2 then
     -- SC
-    lcd.drawPixmap(112, 8, "ailerons-2.bmp")
+    lcd.drawPixmap(112, 8, "SC.bmp")
     fieldsMax = 2
-	elseif swparamSet == 3 then
+	elseif paramsSW1 == 3 then
     -- SD
-    lcd.drawPixmap(112, 8, "ailerons-2.bmp")
+    lcd.drawPixmap(112, 8, "SD.bmp")
     fieldsMax = 3
+    elseif paramsSW1 == 4 then
+    -- SE
+    lcd.drawPixmap(112, 8, "SE.bmp")
+    fieldsMax = 4
+	elseif paramsSW1 == 5 then
+    -- SG
+    lcd.drawPixmap(112, 8, "SG.bmp")
+    fieldsMax = 5
 	end
 end
 
@@ -321,40 +390,31 @@ local function paramMenu(event)
   paramsetCH1 = channelIncDec(event, paramsetCH1)
 end
 
--- Throttle Menu
+-- Throttle HOLD Menu
 local function drawThrhldMenu()
   lcd.clear()
-  lcd.drawText(1, 0, "Select Flight Mode Switch", 0)
+  lcd.drawText(1, 0, "Select Throttle HOLD Switch", 0)
   lcd.drawFilledRectangle(0, 0, LCD_W, 8, GREY_DEFAULT+FILL_WHITE)
   lcd.drawCombobox(0, 8, LCD_W/2, switchItems2pos, thrhldMode, getFieldFlags(0))
-  lcd.drawPixmap(120, 8, "7HV.bmp")
   if thrhldMode == 0 then
     -- SF
-    lcd.drawPixmap(112, 8, "7HV.bmp")
+    lcd.drawPixmap(112, 8, "SF.bmp")
     fieldsMax = 0
 	elseif thrhldMode == 1 then
 	-- SH
-    lcd.drawPixmap(112, 8, "ailerons-1.bmp")
+    lcd.drawPixmap(112, 8, "SF.bmp")
     fieldsMax = 1
 	end
 end
 
-local function thrhldMenu(event)
+  local function thrhldMenu(event)
   if dirty then
     dirty = false
     drawThrhldMenu()
   end
-
   navigate(event, fieldsMax, page-1, page+1)
-
-  if field==0 then
-    thrhldMode = fieldIncDec(event, swfltMode, 2)
-  elseif field==1 then
-    ailCH1 = channelIncDec(event, ailCH1)
-	end
+  thrhldMode = channelIncDec(event, thrhldMode)
 end
-
-
 
 -- Confirmation Menu
 local function drawNextLine(x, y, label, channel)
@@ -441,6 +501,8 @@ local function run(event)
     fltmodMenu(event)
   elseif page == THROTTLE_HOLD_PAGE then
     thrhldMenu(event)
+  elseif page == CURVES_PAGE then
+    curvesMenu(event)
   elseif page == PARAM_SET_PAGE then
     paramMenu(event)
   elseif page == CONFIRMATION_PAGE then
